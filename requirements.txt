@@ -1,1 +1,8 @@
 python==3.10
+torch_directml==0.2.5.dev240914
+transformers==4.30.0
+torch==2.4.1
+torchvision==0.19.1
+huggingface_hub[hf_xet]==0.14.1
+
+# may need to download the model manually and place it in the cache directory if there are issues with Hugging Face Hub access

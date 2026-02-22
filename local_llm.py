@@ -12,11 +12,12 @@ checkpoint = "HuggingFaceTB/SmolLM2-1.7B-Instruct"
 print("Model loaded successfully, now running inference...")
 
 '''
-- device = "cpu" for CPU usage
-- device = "cuda" for GPU usage (requires PyTorch with CUDA support and a compatible NVIDIA GPU)
-- device = torch_directml.device() for DirectML GPU usage (DML support is experimental and may require additional setup for directX 12 compatible GPUs on Windows)
+- device = "cpu" # for CPU usage
+- device = "cuda" # for GPU usage (requires PyTorch with CUDA support and a compatible NVIDIA GPU)
+- device = torch_directml.device() # for DirectML GPU usage (DML support is experimental and may require additional setup for DirectX 12 compatible GPUs on Windows)
 '''
-device = "cpu"
+device = torch_directml.device()
+
 print(f"Using device: {device}")
 
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
@@ -28,8 +29,13 @@ if tokenizer.pad_token is None:
 else:
     model = AutoModelForCausalLM.from_pretrained(checkpoint)
 
+# Set the model's padding token ID to match the tokenizer so padding is handled consistently during generation.
 model.config.pad_token_id = tokenizer.pad_token_id
+# Set the model's end-of-sequence token ID to match the tokenizer so generation can stop at the correct EOS (end of sequence) token.
 model.config.eos_token_id = tokenizer.eos_token_id
+
+# Move the model to the specified device
+model = model.to(device)
 
 messages = [{"role": "user",
              "content": "What is the capital of France."
